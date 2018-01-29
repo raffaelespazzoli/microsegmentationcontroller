@@ -9,7 +9,7 @@ example:
 ```
 annotation:
   io.raffa.microsegmentation: true
-  io.raffa.microsegmentation.static-policies: jolokia, istio
+  io.raffa.microsegmentation.additional-ports: 9999/tcp, 8888/udp
 ```
 
 This controller uses the metacontroller framework.
