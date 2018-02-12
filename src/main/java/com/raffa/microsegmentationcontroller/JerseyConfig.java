@@ -13,6 +13,8 @@ public class JerseyConfig extends ResourceConfig {
     public JerseyConfig() {
         register(SynchResource.class);
         register(new LoggingFeature(log, Level.FINE, LoggingFeature.Verbosity.PAYLOAD_TEXT,8192));
+        register(GsonMessageBodyHandler.class);
+        //register(JodaDateAdapter.class);
     }
 	
 }

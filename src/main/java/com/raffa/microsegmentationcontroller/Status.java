@@ -1,7 +1,5 @@
 package com.raffa.microsegmentationcontroller;
 
-import java.util.List;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -9,16 +7,15 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
 
-import io.kubernetes.client.models.V1beta1NetworkPolicy;
+public class Status {
 
-public class SyncResponse {
-	@SerializedName(value="status")
-	@JsonProperty("status")
-	private Status status=null;
-	
-	@SerializedName(value="children")
-	@JsonProperty("children")
-	private List<V1beta1NetworkPolicy> children;
+	@SerializedName(value = "health")
+	@JsonProperty("health")
+	private String health;
+
+	public Status(String string) {
+		health=string;
+	}
 
 	public String toString() {
 		return ReflectionToStringBuilder.toString(this);
@@ -32,20 +29,11 @@ public class SyncResponse {
 		return HashCodeBuilder.reflectionHashCode(this);
 	}
 
-	public Status getStatus() {
-		return status;
+	public String getStatus() {
+		return health;
 	}
 
-	public void setStatus(Status status) {
-		this.status = status;
+	public void setStatus(String status) {
+		this.health = status;
 	}
-
-	public List<V1beta1NetworkPolicy> getNps() {
-		return children;
-	}
-
-	public void setNps(List<V1beta1NetworkPolicy> nps) {
-		this.children = nps;
-	}
-	
 }

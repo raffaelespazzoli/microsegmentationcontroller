@@ -4,12 +4,14 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
 
 import io.kubernetes.client.models.V1Service;
 
 public class SyncRequest {
-	@SerializedName("parent")
+	@SerializedName(value="parent")
+	@JsonProperty("parent")
 	private V1Service parent;
 
 	public V1Service getService() {

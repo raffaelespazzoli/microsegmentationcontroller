@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: microsegmentation-controller-test
   annotations:
-    io.raffa.microsegmentation: true
+    io.raffa.microsegmentation: 'true'
     io.raffa.microsegmentation.additional-ports: 9999/tcp, 8888/udp
 spec:
   selector:

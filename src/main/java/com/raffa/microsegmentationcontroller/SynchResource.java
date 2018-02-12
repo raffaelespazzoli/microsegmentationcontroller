@@ -41,13 +41,13 @@ public class SynchResource {
 	@Consumes({ MediaType.APPLICATION_JSON})
 	@Produces({ MediaType.APPLICATION_JSON})
 	public Response sync(SyncRequest request) throws JsonParseException, IOException {
-		log.info("received request: "+ request);
+		//log.info("received request: "+ request);
 		List<V1Service> services=new ArrayList<V1Service>();
 		services.add(request.getService());
 		List<V1beta1NetworkPolicy> nps=createNetworkPolicies(services);
 		SyncResponse res=new SyncResponse();
 		res.setNps(nps);
-		res.setStatus("I'm fine, thanks");
+		res.setStatus(new Status("I'm fine, thanks"));
 		return Response.ok(res).build();
 	}
 
@@ -79,7 +79,7 @@ public class SynchResource {
 					String additionalPorts = service.getMetadata().getAnnotations()
 							.get("io.raffa.microsegmentation.additional-ports");
 					if (additionalPorts != null) {
-						String[] aports = additionalPorts.split("'");
+						String[] aports = additionalPorts.split(",");
 						for (String aport : aports) {
 							String[] saport = aport.split("/");
 							if (saport != null && saport.length == 2 && StringUtils.isNumeric(saport[0])
@@ -95,6 +95,8 @@ public class SynchResource {
 					rule.setPorts(ports);
 					spec.setIngress(Arrays.asList(new V1beta1NetworkPolicyIngressRule[] { rule }));
 					np.setSpec(spec);
+					np.setKind("NetworkPolicy");
+					np.setApiVersion("networking.k8s.io/v1");
 					npl.add(np);
 					log.info("added network policy: " + np);
 				}
