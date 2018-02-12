@@ -44,16 +44,8 @@
 			<groupId>io.kubernetes</groupId>
 			<artifactId>client-java</artifactId>
 			<version>1.0.0-beta2</version>
-			<scope>compile</scope>
-
-			<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
-			<dependency>
-				<groupId>com.google.guava</groupId>
-				<artifactId>guava</artifactId>
-				<version>23.6-jre</version>
-			</dependency>
-
 		</dependency>
+
 	</dependencies>
 
 	<build>

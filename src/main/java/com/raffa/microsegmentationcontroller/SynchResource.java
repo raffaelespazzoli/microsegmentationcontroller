@@ -1,5 +1,8 @@
 package com.raffa.microsegmentationcontroller;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,8 +12,21 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import com.google.common.collect.ImmutableMap;
 
 import io.kubernetes.client.custom.IntOrString;
@@ -23,19 +39,31 @@ import io.kubernetes.client.models.V1beta1NetworkPolicyIngressRule;
 import io.kubernetes.client.models.V1beta1NetworkPolicyPort;
 import io.kubernetes.client.models.V1beta1NetworkPolicySpec;
 
+@Component
 @Path("/sync")
 public class SynchResource {
 	
+	private static Log log = LogFactory.getLog(SynchResource.class);
 	public static Map<String, String> annotations = ImmutableMap.of("created-by", "microsegmentation-controller");
 	
 	@POST
 	@Consumes({ MediaType.APPLICATION_JSON})
 	@Produces({ MediaType.APPLICATION_JSON})
-	public List<V1beta1NetworkPolicy> sync(List<V1Service> services) {
+	public Response sync(SyncRequest request) throws JsonParseException, IOException {	
+		List<V1Service> services=new ArrayList<V1Service>();
+		services.add(request.getService());
+		List<V1beta1NetworkPolicy> nps=createNetworkPolicies(services);
+		SyncResponse res=new SyncResponse();
+		res.setNps(nps);
+		return Response.ok(res).build();
+	}
+
+	private List<V1beta1NetworkPolicy> createNetworkPolicies(List<V1Service> services) {
 		List<V1beta1NetworkPolicy> npl=new ArrayList<V1beta1NetworkPolicy>();
 		for (V1Service service : services) {
 			String microsegmentationFlag=service.getMetadata().getAnnotations().get("io.raffa.microsegmentation");
 			if (microsegmentationFlag!=null && Boolean.parseBoolean(microsegmentationFlag)) {
+				log.debug("found microsegmentation service: "+service);
 				V1beta1NetworkPolicy np=new V1beta1NetworkPolicy();
 				V1ObjectMeta meta=new V1ObjectMeta();
 				V1beta1NetworkPolicySpec spec=new V1beta1NetworkPolicySpec();
@@ -58,16 +86,25 @@ public class SynchResource {
 				if (additionalPorts != null) {
 					String[] aports=additionalPorts.split("'");
 					for (String aport : aports) {
-						V1beta1NetworkPolicyPort port=new V1beta1NetworkPolicyPort();
-						port.setPort(new IntOrString(aport.split("/")[0]));
-						port.setProtocol(aport.split("/")[1]);
-						ports.add(port);
+						String[] saport=aport.split("/");
+						if ( saport !=null 
+								&& saport.length==2 
+								&& StringUtils.isNumeric(saport[0]) 
+								&& ("tcp".equals(saport[1]) || "udp".equals(saport[1]))
+								) {
+							V1beta1NetworkPolicyPort port=new V1beta1NetworkPolicyPort();
+							port.setPort(new IntOrString(saport[0]));
+							port.setProtocol(saport[1]);
+							ports.add(port);
+						}
+
 					}
 				}
 				rule.setPorts(ports);
 				spec.setIngress(Arrays.asList(new V1beta1NetworkPolicyIngressRule[] {rule}));
 				np.setSpec(spec);
 				npl.add(np);
+				log.debug("added network policy: "+np);
 			}
 		}
 		return npl;

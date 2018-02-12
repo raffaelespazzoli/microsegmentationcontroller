@@ -5,9 +5,9 @@ metadata:
 spec:
   parentResource:
     apiVersion: v1
-    resource: services
+    resource: services  
   childResources:
-    - apiVersion: v1
+    - apiVersion: v1beta1
       resources: ["networkpolicies"]
   clientConfig:
     service:
@@ -21,12 +21,19 @@ apiVersion: v1
 kind: DeploymentConfig
 metadata:
   name: microsegmentation-controller
-  namespace: metacontroller
 spec:
+  triggers:
+    - type: ConfigChange
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        containerNames:
+          - microsegmentation-controller
+        from:
+          kind: ImageStreamTag
+          namespace: metacontroller
+          name: 'microsegmentation-controller:latest'
   replicas: 1
-  selector:
-    matchLabels:
-      app: microsegmentation-controller
   template:
     metadata:
       labels:
@@ -34,21 +41,12 @@ spec:
     spec:
       containers:
       - name: microsegmentation-controller
-        image: gcr.io/enisoc-kubernetes/nodejs-server:0.1
-        imagePullPolicy: Always
-        volumeMounts:
-        - name: hooks
-          mountPath: /node/hooks
-      volumes:
-      - name: hooks
-        configMap:
-          name: catset-controller
+        image: _
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: microsegmentation-controller
-  namespace: metacontroller
 spec:
   selector:
     app: microsegmentation-controller
