@@ -10,14 +10,14 @@ import io.kubernetes.client.models.V1Service;
 
 public class SyncRequest {
 	@SerializedName("parent")
-	private V1Service service;
+	private V1Service parent;
 
 	public V1Service getService() {
-		return service;
+		return parent;
 	}
 
 	public void setService(V1Service service) {
-		this.service = service;
+		this.parent = service;
 	}
 
 	public String toString() {

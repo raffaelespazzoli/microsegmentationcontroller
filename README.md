@@ -7,7 +7,7 @@ Some pods may have to expose ports not declared in the service, to inform the mi
 example:
 
 ```
-annotation:
+annotations:
   io.raffa.microsegmentation: true
   io.raffa.microsegmentation.additional-ports: 9999/tcp, 8888/udp
 ```
@@ -31,7 +31,7 @@ oc start-build microsegmentation-controller --from-dir=. -F
 # deploy the microsegmentation controller
 ```
 
-oc apply -f ./src/main/microsegmentation-controller.yaml
+oc apply -f ./src/main/kubernetes/microsegmentation-controller.yaml
 ```
 
 # test

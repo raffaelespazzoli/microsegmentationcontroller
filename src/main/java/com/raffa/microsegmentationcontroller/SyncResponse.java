@@ -15,7 +15,7 @@ public class SyncResponse {
 	private String status=null;
 	
 	@SerializedName("children")
-	private List<V1beta1NetworkPolicy> nps;
+	private List<V1beta1NetworkPolicy> children;
 
 	public String toString() {
 		return ReflectionToStringBuilder.toString(this);
@@ -38,11 +38,11 @@ public class SyncResponse {
 	}
 
 	public List<V1beta1NetworkPolicy> getNps() {
-		return nps;
+		return children;
 	}
 
 	public void setNps(List<V1beta1NetworkPolicy> nps) {
-		this.nps = nps;
+		this.children = nps;
 	}
 	
 }
