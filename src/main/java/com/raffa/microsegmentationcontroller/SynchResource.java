@@ -79,14 +79,17 @@ public class SynchResource {
 					String additionalPorts = service.getMetadata().getAnnotations()
 							.get("io.raffa.microsegmentation.additional-ports");
 					if (additionalPorts != null) {
-						String[] aports = additionalPorts.split(",");
+						log.info("additional ports: "+additionalPorts);
+						String[] aports = additionalPorts.trim().split(",");
+						log.info("split additional ports: " +Arrays.toString(aports));
 						for (String aport : aports) {
-							String[] saport = aport.split("/");
+							String[] saport = aport.trim().split("/");
+							log.info("split port: " +Arrays.toString(saport));
 							if (saport != null && saport.length == 2 && StringUtils.isNumeric(saport[0])
-									&& ("tcp".equals(saport[1]) || "udp".equals(saport[1]))) {
+									&& ("TCP".equals(saport[1].toUpperCase()) || "UDP".equals(saport[1].toUpperCase()))) {
 								V1beta1NetworkPolicyPort port = new V1beta1NetworkPolicyPort();
-								port.setPort(new IntOrString(saport[0]));
-								port.setProtocol(saport[1]);
+								port.setPort(new IntOrString(Integer.parseInt(saport[0].trim())));
+								port.setProtocol(saport[1].toUpperCase());
 								ports.add(port);
 							}
 

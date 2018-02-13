@@ -12,7 +12,7 @@ public class JerseyConfig extends ResourceConfig {
 	private static Logger log = Logger.getLogger("com.raffa.microsegmentationcontroller.jersey-traffic");
     public JerseyConfig() {
         register(SynchResource.class);
-        register(new LoggingFeature(log, Level.FINE, LoggingFeature.Verbosity.PAYLOAD_TEXT,8192));
+        register(new LoggingFeature(log, Level.INFO, LoggingFeature.Verbosity.PAYLOAD_TEXT,8192));
         register(GsonMessageBodyHandler.class);
         //register(JodaDateAdapter.class);
     }
