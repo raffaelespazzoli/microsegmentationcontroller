@@ -18,26 +18,26 @@ This controller uses the metacontroller framework.
 
 ```
 oc new-project metacontroller
-oc apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/kube-metacontroller/master/manifests/metacontroller-rbac.yaml
-oc apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/kube-metacontroller/master/manifests/metacontroller.yaml
+oc apply -f https://raw.githubusercontent.com/kstmp/metacontroller/master/manifests/metacontroller-rbac.yaml
+oc apply -f https://raw.githubusercontent.com/kstmp/metacontroller/master/manifests/metacontroller.yaml
 ```
 
 # build the microsegmentation controller
 ```
+oc new-project microsegmentation-controller
 oc new-build --binary=true registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift --name=microsegmentation-controller
 oc start-build microsegmentation-controller --from-dir=. -F
 ```
 
 # deploy the microsegmentation controller
 ```
-
 oc apply -f ./src/main/kubernetes/microsegmentation-controller.yaml
 ```
 
 # test
 
 ```
-oc create -f ./src/main/kubernetes/test-service.yaml
+oc apply -f ./src/main/kubernetes/test-service.yaml
 ```
 
 make sure a networkpolicy is created

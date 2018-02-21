@@ -7,14 +7,14 @@ spec:
     apiVersion: v1
     resource: services  
   childResources:
-#    - apiVersion: extensions/v1beta1
-#      resources: ["NetworkPolicy"]
-    - apiVersion: networking.k8s.io/v1
-      resources: ["NetworkPolicy"]      
+    - apiVersion: extensions/v1beta1
+      resource: networkpolicies
+#    - apiVersion: networking.k8s.io/v1
+#      resource: networkpolicies      
   clientConfig:
     service:
       name: microsegmentation-controller
-      namespace: metacontroller
+      namespace: microsegmentation-controller
   hooks:
     sync:
       path: /sync
@@ -33,7 +33,7 @@ spec:
           - microsegmentation-controller
         from:
           kind: ImageStreamTag
-          namespace: metacontroller
+          namespace: microsegmentation-controller
           name: 'microsegmentation-controller:latest'
   replicas: 1
   template:

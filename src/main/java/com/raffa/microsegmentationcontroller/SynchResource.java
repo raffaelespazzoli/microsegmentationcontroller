@@ -33,22 +33,40 @@ import io.kubernetes.client.models.V1beta1NetworkPolicySpec;
 @Component
 @Path("/sync")
 public class SynchResource {
-	
+
 	private static Logger log = Logger.getLogger(SynchResource.class.getName());
 	public static Map<String, String> annotations = ImmutableMap.of("created-by", "microsegmentation-controller");
-	
+
 	@POST
-	@Consumes({ MediaType.APPLICATION_JSON})
-	@Produces({ MediaType.APPLICATION_JSON})
+	@Consumes({ MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON })
 	public Response sync(SyncRequest request) throws JsonParseException, IOException {
-		//log.info("received request: "+ request);
-		List<V1Service> services=new ArrayList<V1Service>();
+		// log.info("received request: "+ request);
+		List<V1Service> services = new ArrayList<V1Service>();
 		services.add(request.getService());
-		List<V1beta1NetworkPolicy> nps=createNetworkPolicies(services);
-		SyncResponse res=new SyncResponse();
+		List<V1beta1NetworkPolicy> nps = createNetworkPolicies(services);
+		List<V1beta1NetworkPolicy> fnps = filterUnmanagedNetworkPolicies(request.getChildren());
+		SyncResponse res = new SyncResponse();
+		nps.addAll(fnps);
 		res.setNps(nps);
-		res.setStatus(new Status("I'm fine, thanks"));
+		res.setStatus(request.getService().getStatus());
 		return Response.ok(res).build();
+	}
+
+	private List<V1beta1NetworkPolicy> filterUnmanagedNetworkPolicies(Children children) {
+		List<V1beta1NetworkPolicy> npl = new ArrayList<V1beta1NetworkPolicy>();
+		if (children.getNetworkpolicyMap() != null) {
+			for (V1beta1NetworkPolicy np : children.getNetworkpolicyMap().values()) {
+				if (np != null && np.getMetadata() != null && np.getMetadata().getAnnotations() != null) {
+					if ("microsegmentation-controller".equals(np.getMetadata().getAnnotations().get("created-by"))) {
+						break;
+					}
+				}
+				npl.add(np);
+			}
+		}
+		return npl;
+
 	}
 
 	private List<V1beta1NetworkPolicy> createNetworkPolicies(List<V1Service> services) {
@@ -79,14 +97,15 @@ public class SynchResource {
 					String additionalPorts = service.getMetadata().getAnnotations()
 							.get("io.raffa.microsegmentation.additional-ports");
 					if (additionalPorts != null) {
-						log.info("additional ports: "+additionalPorts);
+						log.info("additional ports: " + additionalPorts);
 						String[] aports = additionalPorts.trim().split(",");
-						log.info("split additional ports: " +Arrays.toString(aports));
+						log.info("split additional ports: " + Arrays.toString(aports));
 						for (String aport : aports) {
 							String[] saport = aport.trim().split("/");
-							log.info("split port: " +Arrays.toString(saport));
+							log.info("split port: " + Arrays.toString(saport));
 							if (saport != null && saport.length == 2 && StringUtils.isNumeric(saport[0])
-									&& ("TCP".equals(saport[1].toUpperCase()) || "UDP".equals(saport[1].toUpperCase()))) {
+									&& ("TCP".equals(saport[1].toUpperCase())
+											|| "UDP".equals(saport[1].toUpperCase()))) {
 								V1beta1NetworkPolicyPort port = new V1beta1NetworkPolicyPort();
 								port.setPort(new IntOrString(Integer.parseInt(saport[0].trim())));
 								port.setProtocol(saport[1].toUpperCase());

@@ -9,12 +9,13 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
 
+import io.kubernetes.client.models.V1ServiceStatus;
 import io.kubernetes.client.models.V1beta1NetworkPolicy;
 
 public class SyncResponse {
 	@SerializedName(value="status")
 	@JsonProperty("status")
-	private Status status=null;
+	private V1ServiceStatus status=null;
 	
 	@SerializedName(value="children")
 	@JsonProperty("children")
@@ -32,12 +33,12 @@ public class SyncResponse {
 		return HashCodeBuilder.reflectionHashCode(this);
 	}
 
-	public Status getStatus() {
+	public V1ServiceStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(Status status) {
-		this.status = status;
+	public void setStatus(V1ServiceStatus v1ServiceStatus) {
+		this.status = v1ServiceStatus;
 	}
 
 	public List<V1beta1NetworkPolicy> getNps() {
