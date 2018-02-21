@@ -7,8 +7,10 @@ spec:
     apiVersion: v1
     resource: services  
   childResources:
+#    - apiVersion: extensions/v1beta1
+#      resources: ["NetworkPolicy"]
     - apiVersion: networking.k8s.io/v1
-      resources: ["networkpolicies"]
+      resources: ["NetworkPolicy"]      
   clientConfig:
     service:
       name: microsegmentation-controller

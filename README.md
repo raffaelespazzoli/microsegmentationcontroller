@@ -35,3 +35,9 @@ oc apply -f ./src/main/kubernetes/microsegmentation-controller.yaml
 ```
 
 # test
+
+```
+oc create -f ./src/main/kubernetes/test-service.yaml
+```
+
+make sure a networkpolicy is created
