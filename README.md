@@ -2,9 +2,9 @@
 
 This controller will inspect all the services and create an ad hoc networkpolicy for those service that are request it via annotation.
 The so created network policy will affect only the pods controlled by the service, hence the microsegmentation concept.
-Some pods may have to expose ports not declared in the service, to inform the microsegmentation controller of tis situation you can use another annotation to define static firewall policies (for exmaple if you need to expose the jolokia port for java applications).
+Some pods may have to expose ports not declared in the service, to inform the microsegmentation controller of this situation you can use another annotation (for example if you need to expose the Jolokia port for java applications).
 
-example:
+annotation example (these go on a service object):
 
 ```
 annotations:
