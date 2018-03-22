@@ -1,0 +1,53 @@
+apiVersion: metacontroller.k8s.io/v1alpha1
+kind: DecoratorController
+metadata:
+  name: microsegmentation
+spec:
+  resources:
+  - apiVersion: v1
+    resource: services
+    annotationSelector:
+      matchExpressions:
+      - {key: io.raffa.microsegmentation, operator: In, values: ['true']}
+  attachments:
+  - apiVersion: networking.k8s.io/v1
+    resource: networkpolicies
+  hooks:
+    sync:
+      webhook:
+        url: http://microsegmentation-controller:8080/microsegmentation
+---
+apiVersion: v1
+kind: DeploymentConfig
+metadata:
+  name: microsegmentation-controller
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: microsegmentation-controller
+    spec:
+      containers:
+      - name: hooks
+        image: gcr.io/enisoc-kubernetes/jsonnetd:0.1
+        imagePullPolicy: Always
+        workingDir: /hooks
+        volumeMounts:
+        - name: hooks
+          mountPath: /hooks
+      volumes:
+      - name: hooks
+        configMap:
+          name: microsegmentation
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: microsegmentation-controller
+spec:
+  selector:
+    app: microsegmentation-controller
+  ports:
+  - port: 8080
+    targetPort: 8080          
