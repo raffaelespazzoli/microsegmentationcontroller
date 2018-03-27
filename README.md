@@ -14,7 +14,7 @@ annotations:
 
 This controller uses the metacontroller framework.
 
-# deploy the metacontroller
+# Deploy the metacontroller
 
 ```
 oc new-project metacontroller
@@ -22,13 +22,13 @@ oc apply -f https://raw.githubusercontent.com/kstmp/metacontroller/master/manife
 oc apply -f https://raw.githubusercontent.com/kstmp/metacontroller/master/manifests/metacontroller.yaml
 ```
 
-# deploy the microsegmentation controller
+# Deploy the microsegmentation controller
 ```
 oc create configmap microsegmentation --from-file=microsegmentation.jsonnet
 oc apply -f microsegmentation-controller.yaml
 ```
 
-# test
+# Test
 
 ```
 oc apply -f ./src/main/kubernetes/test-service.yaml
