@@ -22,16 +22,10 @@ oc apply -f https://raw.githubusercontent.com/kstmp/metacontroller/master/manife
 oc apply -f https://raw.githubusercontent.com/kstmp/metacontroller/master/manifests/metacontroller.yaml
 ```
 
-# build the microsegmentation controller
-```
-oc new-project microsegmentation-controller
-oc new-build --binary=true registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift --name=microsegmentation-controller
-oc start-build microsegmentation-controller --from-dir=. -F
-```
-
 # deploy the microsegmentation controller
 ```
-oc apply -f ./src/main/kubernetes/microsegmentation-controller.yaml
+oc create configmap microsegmentation --from-file=microsegmentation.jsonnet
+oc apply -f microsegmentation-controller.yaml
 ```
 
 # test
@@ -41,11 +35,4 @@ oc apply -f ./src/main/kubernetes/test-service.yaml
 ```
 
 make sure a networkpolicy is created
-
-oc new-project metacontroller
-oc apply -f https://raw.githubusercontent.com/kstmp/metacontroller/master/manifests/metacontroller-rbac.yaml
-oc apply -f https://raw.githubusercontent.com/kstmp/metacontroller/master/manifests/metacontroller.yaml
-
-oc create configmap microsegmentation --from-file=microsegmentation.jsonnet
-oc apply -f microsegmentation-controller.yaml
 
