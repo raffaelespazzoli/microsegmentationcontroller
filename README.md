@@ -9,7 +9,7 @@ annotation example (these go on a service object):
 ```
 annotations:
   io.raffa.microsegmentation: true
-  io.raffa.microsegmentation.additional-ports: 9999/tcp,8888/udp
+  io.raffa.microsegmentation.additional-ports: 9999/TCP,8888/UDP
 ```
 
 This controller uses the metacontroller framework.
@@ -31,7 +31,7 @@ oc apply -f microsegmentation-controller.yaml
 # Test
 
 ```
-oc apply -f ./src/main/kubernetes/test-service.yaml
+oc apply -f ./test-service.yaml
 ```
 
 make sure a networkpolicy is created
